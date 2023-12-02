@@ -6,6 +6,10 @@ let isDrawing = false;
 // Array pentru stocarea tuturor elementelor adaugate in svg
 let elements = [];
 
+let selectedElement = null;
+let isDragging = false;
+let offset = {x : 0, y : 0};
+
 function setLine() {
     elemToDraw = "line";
 }
@@ -19,7 +23,8 @@ function setRectangle() {
 }
 
 function startDrawing(event) {
-    if (elemToDraw && !isDrawing) {
+    const targetElement = event.target;
+    if (elemToDraw && !isDrawing && !isDragging) {
         isDrawing = true;
 
         const svg = document.getElementById("svg-editor");
@@ -27,6 +32,42 @@ function startDrawing(event) {
         // Get initial mouse position
         x1 = event.clientX - svg.getBoundingClientRect().left;
         y1 = event.clientY - svg.getBoundingClientRect().top;
+
+        if(targetElement.classList.contains("draggable")){
+            isDragging = true;
+            selectedElement = targetElement;
+            offset.x = event.clientX - selectedElement.getBoundingClientRect().left;
+            offset.y = event.clientY - selectedElement.getBoundingClientRect().top;
+        }
+    }
+}
+
+function draw(event) {
+    if (isDragging && selectedElement) {
+        const svg = document.getElementById("svg-editor");
+        const mouseX = event.clientX - svg.getBoundingClientRect().left;
+        const mouseY = event.clientY - svg.getBoundingClientRect().top;
+
+        if (elemToDraw === "rectangle") {
+            selectedElement.setAttribute("x", mouseX - offset.x);
+            selectedElement.setAttribute("y", mouseY - offset.y);
+        } else if (elemToDraw === "ellipse") {
+            selectedElement.setAttribute("cx", mouseX - offset.x);
+            selectedElement.setAttribute("cy", mouseY - offset.y);
+        } else if (elemToDraw === "line") {
+            const deltaX = mouseX - x1;
+            const deltaY = mouseY - y1;
+
+            // Update the line position based on the mouse movement
+            selectedElement.setAttribute("x1", parseFloat(selectedElement.getAttribute("x1")) + deltaX);
+            selectedElement.setAttribute("y1", parseFloat(selectedElement.getAttribute("y1")) + deltaY);
+            selectedElement.setAttribute("x2", parseFloat(selectedElement.getAttribute("x2")) + deltaX);
+            selectedElement.setAttribute("y2", parseFloat(selectedElement.getAttribute("y2")) + deltaY);
+
+            // Update the initial mouse position for the next iteration
+            x1 = mouseX;
+            y1 = mouseY;
+        }
     }
 }
 
@@ -40,7 +81,7 @@ function stopDrawing(event) {
     x2 = event.clientX - svg.getBoundingClientRect().left;
     y2 = event.clientY - svg.getBoundingClientRect().top;
 
-    if(isDrawing){
+    if(isDrawing && !isDragging){
         if (elemToDraw === "line") {
             const line = document.createElementNS("http://www.w3.org/2000/svg", 'line');
             line.setAttribute('x1', x1);
@@ -49,6 +90,7 @@ function stopDrawing(event) {
             line.setAttribute('y2', y2);
             line.setAttribute('stroke', color);
             line.setAttribute('stroke-width', thickness);
+            line.classList.add("draggable");
             elements.push(line);
             svg.appendChild(line);
         }
@@ -62,6 +104,7 @@ function stopDrawing(event) {
             rect.setAttribute('stroke', color);
             rect.setAttribute('fill', color);
             elements.push(rect);
+            rect.classList.add("draggable");
             svg.appendChild(rect);
         }
 
@@ -73,12 +116,14 @@ function stopDrawing(event) {
             ellipse.setAttribute('ry', Math.abs(y2 - y1) / 2);
             ellipse.setAttribute('stroke', color);
             ellipse.setAttribute('fill', color);
+            ellipse.classList.add("draggable");
             elements.push(ellipse);
             svg.appendChild(ellipse);
         }
     }
     
     isDrawing = false;
+    isDragging = false;
 }
 
 function undo(){

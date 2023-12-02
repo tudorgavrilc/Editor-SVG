@@ -16,16 +16,16 @@
         <label for="thickness">Line Thickness:</label>
         <input type="range" id="thickness" min="1" max="10" value="1">
 
-    <button onclick="setLine()">Add Line</button>
-    <button onclick="setEllipse()">Add Ellipse</button>
-    <button onclick="setRectangle()">Add Rectangle</button>
+    <button onclick="setLine()">Add/Move Line</button>
+    <button onclick="setEllipse()">Add/Move Ellipse</button>
+    <button onclick="setRectangle()">Add/Move Rectangle</button>
     <button onclick="undo()">Undo</button>
     <button onclick="exportAsImage()">Export as Image</button>
     <button onclick="exportAsSVG()">Export as SVG</button>
     </div>
 
-    <svg id="svg-editor" width="800" height="600" xmlns="http://www.w3.org/2000/svg" 
-        onmousedown="startDrawing(event)" onmouseup="stopDrawing(event)">
+    <svg id="svg-editor" width="1280" height="720" xmlns="http://www.w3.org/2000/svg" 
+        onmousedown="startDrawing(event)" onmousemove="draw(event)" onmouseup="stopDrawing(event)">
         
     </svg>
 </body>
