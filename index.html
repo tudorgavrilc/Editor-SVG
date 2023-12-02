@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Editor SVG</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='styles.css'>
+    <script src='script.js'></script>
+</head>
+<body>
+    <div>
+        <label for="color">Select color:</label>
+        <input type="color" id="color" value="#000000">
+
+        <label for="thickness">Line Thickness:</label>
+        <input type="range" id="thickness" min="1" max="10" value="1">
+
+    <button onclick="setLine()">Add Line</button>
+    <button onclick="setEllipse()">Add Ellipse</button>
+    <button onclick="setRectangle()">Add Rectangle</button>
+    <button onclick="undo()">Undo</button>
+    <button onclick="exportAsImage()">Export as Image</button>
+    <button onclick="exportAsSVG()">Export as SVG</button>
+    </div>
+
+    <svg id="svg-editor" width="800" height="600" xmlns="http://www.w3.org/2000/svg" 
+        onmousedown="startDrawing(event)" onmouseup="stopDrawing(event)">
+        
+    </svg>
+</body>
+</html>
